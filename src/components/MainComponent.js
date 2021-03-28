@@ -9,7 +9,7 @@ import Home from "./HomeComponent";
 import About from "./AboutComponent";
 import { connect }from 'react-redux';
 import { actions} from  'react-redux-form';
-import { postComment, fetchCampsites, fetchComments, fetchPromotions } from '../redux/ActionCreators';
+import { postComment, fetchCampsites, fetchComments, fetchPromotions, fetchPartners, postFeedback } from '../redux/ActionCreators';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 
@@ -18,7 +18,7 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
       campsites: state.campsites,
       comments: state.comments,
       partners: state.partners,
-      promotions: state.promotions
+      promotions: state.promotions,
     }
   }
 
@@ -29,6 +29,8 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
     resetFeedbackForm: () => actions.reset("feedbackForm"),
     fetchComments: () => fetchComments(),
     fetchPromotions: () => fetchPromotions(),
+    fetchPartners: () => fetchPartners(),
+    postFeedback: (values) => postFeedback(values),
   };
 
   class Main extends Component {
@@ -37,6 +39,8 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
       this.props.fetchCampsites();
       this.props.fetchComments();
       this.props.fetchPromotions();
+      this.props.fetchPartners();
+      
     }
 
   render() {
@@ -45,20 +49,23 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
       return (
         <Home
           campsite={
-            this.props.campsites.campsites.filter((campsite) => campsite.featured)[0]
+            this.props.campsites.campsites.filter(
+              (campsite) => campsite.featured
+            )[0]
           }
-          campsitesLoading={this.props.campsites.isLoading} 
-          campsitesErrMess = {this.props.campsites.errMess}
+          campsitesLoading={this.props.campsites.isLoading}
+          campsitesErrMess={this.props.campsites.errMess}
           promotion={
-            this.props.promotions.promotions.filter((promotion) => promotion.featured)[0]
+            this.props.promotions.promotions.filter(
+              (promotion) => promotion.featured
+            )[0]
           }
           promotionLoading={this.props.promotions.isLoading}
-          promotionErrMess = {
-            this.props.promotions.errMess
-          }
-          partner={
-            this.props.partners.filter((partner) => partner.featured)[0]
-          }
+          promotionErrMess={this.props.promotions.errMess}
+          partner={this.props.partners.partners.filter(
+          (partner) => partner.featured)[0]}
+          partnerLoading={this.props.partners.isLoading}
+          partnerErrMess={this.props.partners.errMess}
         />
       );
     }
@@ -103,7 +110,7 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
                 exact
                 path="/contactus"
                 render={() => (
-                  <Contact resetFeedbackForm={this.props.resetFeedbackForm} />
+                  <Contact resetFeedbackForm={this.props.resetFeedbackForm} postFeedback={this.props.postFeedback} />
                 )}
               />
               <Redirect to="/home" />
